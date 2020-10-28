@@ -32,8 +32,6 @@ public class FloatingView implements IFloatingView {
     private WeakReference<FrameLayout> mContainer;
     @LayoutRes
     private int mLayoutId = R.layout.en_floating_view;
-    @DrawableRes
-    private int mIconRes = R.drawable.imuxuan;
     private ViewGroup.LayoutParams mLayoutParams = getParams();
 
     private FloatingView() {
@@ -52,16 +50,21 @@ public class FloatingView implements IFloatingView {
 
     @Override
     public FloatingView remove() {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        FloatingMagnetView mEnFloatingView = this.mEnFloatingView;
+        if (mEnFloatingView == null) {
+            return this;
+        }
+        mEnFloatingView.post(new Runnable() {
             @Override
             public void run() {
+                FloatingMagnetView mEnFloatingView = FloatingView.this.mEnFloatingView;
                 if (mEnFloatingView == null) {
                     return;
                 }
                 if (ViewCompat.isAttachedToWindow(mEnFloatingView) && getContainer() != null) {
                     getContainer().removeView(mEnFloatingView);
                 }
-                mEnFloatingView = null;
+                FloatingView.this.mEnFloatingView=null;
             }
         });
         return this;
@@ -75,7 +78,6 @@ public class FloatingView implements IFloatingView {
             EnFloatingView enFloatingView = new EnFloatingView(EnContext.get(), mLayoutId);
             mEnFloatingView = enFloatingView;
             enFloatingView.setLayoutParams(mLayoutParams);
-            enFloatingView.setIconImage(mIconRes);
             addViewToWindow(enFloatingView);
         }
     }
@@ -132,12 +134,6 @@ public class FloatingView implements IFloatingView {
     }
 
     @Override
-    public FloatingView icon(@DrawableRes int resId) {
-        mIconRes = resId;
-        return this;
-    }
-
-    @Override
     public FloatingView customView(FloatingMagnetView viewGroup) {
         mEnFloatingView = viewGroup;
         return this;
@@ -167,10 +163,10 @@ public class FloatingView implements IFloatingView {
     }
 
     private void addViewToWindow(final View view) {
-        if (getContainer() == null) {
-            return;
+        FrameLayout container = getContainer();
+        if(container!=null) {
+            container.addView(view);
         }
-        getContainer().addView(view);
     }
 
     private FrameLayout getContainer() {

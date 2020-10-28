@@ -1,5 +1,6 @@
 package com.imuxuan.floatingview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
@@ -60,6 +61,7 @@ public class FloatingMagnetView extends FrameLayout {
 //        updateSize();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event == null) {
@@ -158,7 +160,6 @@ public class FloatingMagnetView extends FrameLayout {
 
     protected class MoveAnimator implements Runnable {
 
-        private Handler handler = new Handler(Looper.getMainLooper());
         private float destinationX;
         private float destinationY;
         private long startingTime;
@@ -167,7 +168,7 @@ public class FloatingMagnetView extends FrameLayout {
             this.destinationX = x;
             this.destinationY = y;
             startingTime = System.currentTimeMillis();
-            handler.post(this);
+            post(this);
         }
 
         @Override
@@ -180,12 +181,12 @@ public class FloatingMagnetView extends FrameLayout {
             float deltaY = (destinationY - getY()) * progress;
             move(deltaX, deltaY);
             if (progress < 1) {
-                handler.post(this);
+                post(this);
             }
         }
 
         private void stop() {
-            handler.removeCallbacks(this);
+            removeCallbacks(this);
         }
     }
 
